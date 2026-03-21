@@ -252,7 +252,6 @@ def compute_features():
     # Cap amount_ratio at 10 to match training preprocessing
     amount_ratio   = min(amount / (oldbalanceOrg + 1), 10)
     dest_was_empty = 1 if oldbalanceDest == 0 else 0
-    is_large_amount = 1 if amount > 200_000 else 0
     hour_of_day    = step % 24
 
     # --- Group 3: Aggregation ---
@@ -303,19 +302,21 @@ with st.expander("🔍 Preview Auto-Computed Features"):
     col_a, col_b = st.columns(2)
     with col_a:
         st.markdown("**Derived Features**")
+        # ✅ FIX: Build list safely — no duplicates possible
+        derived_cols = ["amount_ratio", "dest_was_empty", "hour_of_day"]
         st.dataframe(
-            df_preview[["amount_ratio", "dest_was_empty", "is_large_amount" if "is_large_amount" in df_preview.columns else "hour_of_day", "hour_of_day"]],
-            use_container_width=True
+            df_preview[derived_cols],
+            width='stretch'
         )
     with col_b:
         st.markdown("**Unique Features**")
         st.dataframe(
             df_preview[["drain_score", "both_accounts_suspicious"]],
-            use_container_width=True
+            width='stretch'
         )
 
     st.markdown("**Full Feature Vector (sent to model)**")
-    st.dataframe(df_preview[feature_list], use_container_width=True)
+    st.dataframe(df_preview[feature_list], width='stretch')
 
 
 # ─────────────────────────────────────────────
