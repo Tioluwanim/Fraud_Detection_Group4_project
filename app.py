@@ -24,7 +24,6 @@ st.markdown("""
 html, body, [class*="css"] {
     font-family: 'DM Sans', sans-serif;
 }
-
 .hero-title {
     font-family: 'Syne', sans-serif;
     font-size: 2.8rem;
@@ -72,10 +71,30 @@ html, body, [class*="css"] {
     font-weight: 800;
     margin-bottom: 6px;
 }
-.fraud-color     { color: #ff4444; }
+.fraud-color      { color: #ff4444; }
 .suspicious-color { color: #ff9800; }
-.safe-color      { color: #00c853; }
-.result-sub      { color: #8b8fa8; font-size: 0.9rem; }
+.safe-color       { color: #00c853; }
+.result-sub       { color: #8b8fa8; font-size: 0.9rem; }
+.score-box {
+    background: #0e1117;
+    border: 1px solid #1e2030;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+}
+.score-label {
+    font-size: 0.75rem;
+    color: #8b8fa8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+.score-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff;
+}
 .divider {
     border: none;
     border-top: 1px solid #1e2030;
@@ -108,19 +127,22 @@ html, body, [class*="css"] {
 
 
 # ─────────────────────────────────────────────
-# LOAD MODEL
+# LOAD MODELS
 # ─────────────────────────────────────────────
 
 @st.cache_resource
-def load_model():
+def load_models():
     try:
-        model    = joblib.load("models/gradient_boosting_fraud_model.pkl")
-        features = joblib.load("models/feature_list.pkl")
-        return model, features
-    except FileNotFoundError:
-        return None, None
+        gb_model   = joblib.load("models/gradient_boosting_fraud_model.pkl")
+        iso_model  = joblib.load("models/isolation_forest_model.pkl")
+        iso_scaler = joblib.load("models/iso_scaler.pkl")
+        features   = joblib.load("models/feature_list.pkl")
+        weights    = joblib.load("models/model_weights.pkl")
+        return gb_model, iso_model, iso_scaler, features, weights
+    except FileNotFoundError as e:
+        return None, None, None, None, None
 
-model, feature_list = load_model()
+gb_model, iso_model, iso_scaler, feature_list, weights = load_models()
 
 
 # ─────────────────────────────────────────────
@@ -129,20 +151,30 @@ model, feature_list = load_model()
 
 st.markdown('<div class="hero-title">🔒 FRAUD DETECTION SYSTEM</div>', unsafe_allow_html=True)
 st.markdown(
-    '<div class="hero-sub">Group 4 · Gradient Boosting · Digital Banking Fraud Detection</div>',
+    '<div class="hero-sub">Group 4 · Gradient Boosting + Isolation Forest · Digital Banking Fraud Detection</div>',
     unsafe_allow_html=True
 )
 
-if model is None:
-    st.error("⚠️ Model not found. Make sure `models/gradient_boosting_fraud_model.pkl` and `models/feature_list.pkl` exist.")
+if gb_model is None:
+    st.error(
+        "⚠️ Models not found. Make sure all 5 model files exist in the `models/` folder:\n\n"
+        "- `gradient_boosting_fraud_model.pkl`\n"
+        "- `isolation_forest_model.pkl`\n"
+        "- `iso_scaler.pkl`\n"
+        "- `feature_list.pkl`\n"
+        "- `model_weights.pkl`"
+    )
     st.stop()
+
+# Show model weights in use
+GB_WEIGHT = weights['gb']
+IF_WEIGHT = weights['if']
 
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────
 # SECTION 1 — CORE TRANSACTION INFO
-# Only pre-transaction columns (no newbalance columns)
 # ─────────────────────────────────────────────
 
 st.markdown('<div class="section-label">Core Transaction Info</div>', unsafe_allow_html=True)
@@ -161,22 +193,15 @@ with col1:
         ["CASH_OUT", "TRANSFER"],
         help="Only CASH_OUT and TRANSFER are relevant — fraud only occurs in these types"
     )
-
 with col2:
     amount = st.number_input(
         "Transaction Amount (₦)",
-        min_value=0.0,
-        value=50000.0,
-        step=100.0,
-        format="%.2f"
+        min_value=0.0, value=50000.0, step=100.0, format="%.2f"
     )
-
 with col3:
     step = st.number_input(
         "Step (Simulated Hour)",
-        min_value=0,
-        value=150,
-        step=1,
+        min_value=0, value=150, step=1,
         help="1 step = 1 simulated hour in the dataset"
     )
 
@@ -185,27 +210,19 @@ col4, col5 = st.columns(2)
 with col4:
     oldbalanceOrg = st.number_input(
         "Sender Balance (Before Transaction)",
-        min_value=0.0,
-        value=100000.0,
-        step=100.0,
-        format="%.2f",
+        min_value=0.0, value=100000.0, step=100.0, format="%.2f",
         help="How much the sender had BEFORE this transaction"
     )
-
 with col5:
     oldbalanceDest = st.number_input(
         "Receiver Balance (Before Transaction)",
-        min_value=0.0,
-        value=0.0,
-        step=100.0,
-        format="%.2f",
+        min_value=0.0, value=0.0, step=100.0, format="%.2f",
         help="How much the receiver had BEFORE this transaction"
     )
 
 
 # ─────────────────────────────────────────────
 # SECTION 2 — SENDER HISTORY
-# Used to compute aggregation features
 # ─────────────────────────────────────────────
 
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
@@ -221,74 +238,41 @@ col6, col7 = st.columns(2)
 with col6:
     sender_avg_amount = st.number_input(
         "Sender's Average Transaction Amount (₦)",
-        min_value=0.0,
-        value=40000.0,
-        step=100.0,
-        format="%.2f",
+        min_value=0.0, value=40000.0, step=100.0, format="%.2f",
         help="Average amount this sender typically sends"
     )
-
 with col7:
     sender_total_sent = st.number_input(
         "Sender's Total Amount Ever Sent (₦)",
-        min_value=0.0,
-        value=200000.0,
-        step=100.0,
-        format="%.2f",
+        min_value=0.0, value=200000.0, step=100.0, format="%.2f",
         help="Cumulative total sent by this sender historically"
     )
 
 
 # ─────────────────────────────────────────────
 # AUTO-COMPUTE ALL 10 FEATURES
-# Matches exactly what the model was trained on
 # ─────────────────────────────────────────────
 
 def compute_features():
-    # --- Group 1: Core ---
-    type_encoded = 0 if tx_type == "CASH_OUT" else 1
+    type_encoded             = 0 if tx_type == "CASH_OUT" else 1
+    amount_ratio             = min(amount / (oldbalanceOrg + 1), 10)
+    dest_was_empty           = 1 if oldbalanceDest == 0 else 0
+    hour_of_day              = step % 24
+    drain_score              = amount / (oldbalanceOrg + amount + 1)
+    both_accounts_suspicious = 1 if (oldbalanceOrg <= amount and oldbalanceDest == 0) else 0
 
-    # --- Group 2: Derived (pre-transaction only) ---
-    # Cap amount_ratio at 10 to match training preprocessing
-    amount_ratio   = min(amount / (oldbalanceOrg + 1), 10)
-    dest_was_empty = 1 if oldbalanceDest == 0 else 0
-    hour_of_day    = step % 24
-
-    # --- Group 3: Aggregation ---
-    # sender_avg_amount comes directly from user input above
-
-    # --- Group 4: Unique Features ---
-    # 🌟 Drain Score — how much of sender's balance was drained
-    drain_score = amount / (oldbalanceOrg + amount + 1)
-
-    # 🌟 Both Accounts Suspicious — sender nearly empty + receiver was empty
-    both_accounts_suspicious = 1 if (
-        oldbalanceOrg <= amount and oldbalanceDest == 0
-    ) else 0
-
-    # Build DataFrame in EXACT order model was trained on
     data = {
-        # Core (3)
-        "type_encoded":             [type_encoded],
-        "amount":                   [amount],
-        "oldbalanceOrg":            [oldbalanceOrg],
-
-        # Derived (3)
-        "amount_ratio":             [amount_ratio],
-        "dest_was_empty":           [dest_was_empty],
-        "hour_of_day":              [hour_of_day],
-
-        # Aggregation (1)
-        "sender_avg_amount":        [sender_avg_amount],
-
-        # Core balance (1)
-        "oldbalanceDest":           [oldbalanceDest],
-
-        # Unique (2)
-        "drain_score":              [drain_score],
-        "both_accounts_suspicious": [both_accounts_suspicious],
+        "type_encoded":              [type_encoded],
+        "amount":                    [amount],
+        "oldbalanceOrg":             [oldbalanceOrg],
+        "amount_ratio":              [amount_ratio],
+        "dest_was_empty":            [dest_was_empty],
+        "hour_of_day":               [hour_of_day],
+        "sender_avg_amount":         [sender_avg_amount],
+        "oldbalanceDest":            [oldbalanceDest],
+        "drain_score":               [drain_score],
+        "both_accounts_suspicious":  [both_accounts_suspicious],
     }
-
     return pd.DataFrame(data)
 
 
@@ -302,10 +286,8 @@ with st.expander("🔍 Preview Auto-Computed Features"):
     col_a, col_b = st.columns(2)
     with col_a:
         st.markdown("**Derived Features**")
-        # ✅ FIX: Build list safely — no duplicates possible
-        derived_cols = ["amount_ratio", "dest_was_empty", "hour_of_day"]
         st.dataframe(
-            df_preview[derived_cols],
+            df_preview[["amount_ratio", "dest_was_empty", "hour_of_day"]],
             width='stretch'
         )
     with col_b:
@@ -327,21 +309,27 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
 if st.button("🔍 Analyse Transaction for Fraud"):
 
-    input_df = compute_features()
+    input_df = compute_features()[feature_list]
 
-    # Ensure columns are in correct order
-    input_df = input_df[feature_list]
+    with st.spinner("Running models..."):
 
-    with st.spinner("Running model..."):
-        prediction  = model.predict(input_df)[0]
-        proba       = model.predict_proba(input_df)[0]
-        fraud_prob  = proba[1]
-        safe_prob   = proba[0]
+        # ── Gradient Boosting score ──
+        gb_proba   = gb_model.predict_proba(input_df)[0][1]
+
+        # ── Isolation Forest score ──
+        iso_raw    = iso_model.decision_function(input_df)
+        iso_score  = float(iso_scaler.transform(-iso_raw.reshape(-1, 1)).flatten()[0])
+        # Clip to 0-1 in case of out-of-range values at inference
+        iso_score  = float(np.clip(iso_score, 0, 1))
+
+        # ── Combined weighted score ──
+        combined   = (GB_WEIGHT * gb_proba) + (IF_WEIGHT * iso_score)
+        safe_prob  = 1 - combined
 
     # ── 3-Level Risk Classification ──
-    if fraud_prob >= 0.55:
+    if combined >= 0.55:
         risk_level = "FRAUD"
-    elif fraud_prob >= 0.15:
+    elif combined >= 0.15:
         risk_level = "SUSPICIOUS"
     else:
         risk_level = "LEGIT"
@@ -354,7 +342,7 @@ if st.button("🔍 Analyse Transaction for Fraud"):
             <div class="result-sub">
                 This transaction has been flagged as <strong>fraudulent</strong>.
                 Recommend <strong>blocking</strong> and escalating for manual review.
-                Fraud probability: <strong>{fraud_prob*100:.1f}%</strong>
+                Combined fraud score: <strong>{combined*100:.1f}%</strong>
             </div>
         </div>""", unsafe_allow_html=True)
 
@@ -365,7 +353,7 @@ if st.button("🔍 Analyse Transaction for Fraud"):
             <div class="result-sub">
                 This transaction shows <strong>suspicious patterns</strong>.
                 Recommend flagging for <strong>analyst review</strong> before processing.
-                Fraud probability: <strong>{fraud_prob*100:.1f}%</strong>
+                Combined fraud score: <strong>{combined*100:.1f}%</strong>
             </div>
         </div>""", unsafe_allow_html=True)
 
@@ -375,38 +363,65 @@ if st.button("🔍 Analyse Transaction for Fraud"):
             <div class="result-title safe-color">✅ Transaction Looks Safe</div>
             <div class="result-sub">
                 No fraud indicators detected. This transaction appears <strong>legitimate</strong>.
-                Fraud probability: <strong>{fraud_prob*100:.1f}%</strong>
+                Combined fraud score: <strong>{combined*100:.1f}%</strong>
             </div>
         </div>""", unsafe_allow_html=True)
 
-    # ── Confidence Breakdown ──
+    # ── Score Breakdown — all 3 scores ──
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<div class="section-label">Confidence Breakdown</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">Score Breakdown</div>', unsafe_allow_html=True)
 
+    s1, s2, s3 = st.columns(3)
+
+    with s1:
+        st.markdown(f"""
+        <div class="score-box">
+            <div class="score-label">🤖 Gradient Boosting ({int(GB_WEIGHT*100)}%)</div>
+            <div class="score-value">{gb_proba*100:.1f}%</div>
+        </div>""", unsafe_allow_html=True)
+
+    with s2:
+        st.markdown(f"""
+        <div class="score-box">
+            <div class="score-label">🔍 Isolation Forest ({int(IF_WEIGHT*100)}%)</div>
+            <div class="score-value">{iso_score*100:.1f}%</div>
+        </div>""", unsafe_allow_html=True)
+
+    with s3:
+        st.markdown(f"""
+        <div class="score-box">
+            <div class="score-label">⚡ Combined Score</div>
+            <div class="score-value">{combined*100:.1f}%</div>
+        </div>""", unsafe_allow_html=True)
+
+    # ── Confidence Bar ──
+    st.markdown('<div class="section-label">Confidence</div>', unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
         st.caption("✅ Legitimate probability")
-        st.progress(float(safe_prob))
-        st.write(f"**{safe_prob * 100:.1f}%**")
+        st.progress(float(np.clip(safe_prob, 0, 1)))
+        st.write(f"**{np.clip(safe_prob, 0, 1)*100:.1f}%**")
     with c2:
         st.caption("🚨 Fraud probability")
-        st.progress(float(fraud_prob))
-        st.write(f"**{fraud_prob * 100:.1f}%**")
+        st.progress(float(np.clip(combined, 0, 1)))
+        st.write(f"**{np.clip(combined, 0, 1)*100:.1f}%**")
 
     # ── What Triggered The Flag ──
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
-    st.markdown('<div class="section-label">What The Model Saw</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">What The Models Saw</div>', unsafe_allow_html=True)
 
-    drain_score_val            = input_df['drain_score'].values[0]
-    both_suspicious_val        = input_df['both_accounts_suspicious'].values[0]
-    dest_empty_val             = input_df['dest_was_empty'].values[0]
-    amount_ratio_val           = input_df['amount_ratio'].values[0]
+    drain_score_val          = input_df['drain_score'].values[0]
+    both_suspicious_val      = input_df['both_accounts_suspicious'].values[0]
+    dest_empty_val           = input_df['dest_was_empty'].values[0]
+    amount_ratio_val         = input_df['amount_ratio'].values[0]
 
     flags = []
     if drain_score_val > 0.8:
         flags.append(f"🔴 **Drain Score {drain_score_val:.2f}** — sender's account nearly emptied in one transaction")
     if both_suspicious_val == 1:
         flags.append("🔴 **Both Accounts Suspicious** — sender had little left AND receiver was empty")
+    if iso_score > 0.6:
+        flags.append(f"🔴 **Isolation Forest Score {iso_score:.2f}** — transaction is anomalous compared to normal patterns")
     if dest_empty_val == 1:
         flags.append("🟡 **Receiver Was Empty** — destination account had no prior balance")
     if amount_ratio_val >= 5:
@@ -424,4 +439,7 @@ if st.button("🔍 Analyse Transaction for Fraud"):
 # ─────────────────────────────────────────────
 
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
-st.caption("Group 4 · Digital Banking Fraud Detection System · Gradient Boosting · Built with Streamlit")
+st.caption(
+    f"Group 4 · Digital Banking Fraud Detection System · "
+    f"GB ({int(GB_WEIGHT*100)}%) + IF ({int(IF_WEIGHT*100)}%) · Built with Streamlit"
+)
