@@ -13,59 +13,64 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
-/* ── DARK THEME — target all Streamlit wrappers ── */
-html, body { background-color: #080c14 !important; }
-.stApp { background-color: #080c14 !important; }
-.stApp > div { background-color: #080c14 !important; }
-section[data-testid="stSidebar"] { background-color: #080c14 !important; }
-.main .block-container { background-color: #080c14 !important; }
-[data-testid="stAppViewContainer"] { background-color: #080c14 !important; }
-[data-testid="stHeader"] { background-color: #080c14 !important; }
+/* ── LIGHT THEME ── */
+html, body { background-color: #f5f7fa !important; }
+.stApp { background-color: #f5f7fa !important; }
+.stApp > div { background-color: #f5f7fa !important; }
+section[data-testid="stSidebar"] { background-color: #eef1f6 !important; }
+.main .block-container { background-color: #f5f7fa !important; }
+[data-testid="stAppViewContainer"] { background-color: #f5f7fa !important; }
+[data-testid="stHeader"] { background-color: #f5f7fa !important; }
 [data-testid="stToolbar"] { display: none; }
 
 /* ── Typography base ── */
-html, body, [class*="css"], .stApp { font-family: 'Outfit', sans-serif !important; color: #c8d0e0; }
+html, body, [class*="css"], .stApp { font-family: 'Outfit', sans-serif !important; color: #1a2035; }
 
 /* ── Hide chrome ── */
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 1.5rem 1.2rem 4rem 1.2rem !important; max-width: 760px !important; }
 
-/* ── Input fields — force dark ── */
+/* ── Input fields — light ── */
 .stTextInput input,
 .stNumberInput input,
 input[type="number"],
 div[data-baseweb="input"] input,
 div[data-baseweb="base-input"] input {
-    background-color: #111827 !important;
-    border: 1px solid #1e2a3a !important;
+    background-color: #ffffff !important;
+    border: 1.5px solid #dde3ed !important;
     border-radius: 10px !important;
-    color: #ffffff !important;
+    color: #1a2035 !important;
     font-family: 'JetBrains Mono', monospace !important;
     font-size: 0.9rem !important;
-    caret-color: #00d4aa !important;
+    caret-color: #0070f3 !important;
 }
 div[data-baseweb="input"],
 div[data-baseweb="base-input"] {
-    background-color: #111827 !important;
-    border: 1px solid #1e2a3a !important;
+    background-color: #ffffff !important;
+    border: 1.5px solid #dde3ed !important;
     border-radius: 10px !important;
+}
+div[data-baseweb="input"]:focus-within,
+div[data-baseweb="base-input"]:focus-within {
+    border-color: #0070f3 !important;
+    box-shadow: 0 0 0 3px rgba(0,112,243,0.1) !important;
 }
 
 /* ── Selectbox ── */
 div[data-baseweb="select"] > div {
-    background-color: #111827 !important;
-    border: 1px solid #1e2a3a !important;
+    background-color: #ffffff !important;
+    border: 1.5px solid #dde3ed !important;
     border-radius: 10px !important;
-    color: #ffffff !important;
+    color: #1a2035 !important;
 }
-div[data-baseweb="select"] span { color: #ffffff !important; }
-div[data-baseweb="popover"] { background-color: #111827 !important; border: 1px solid #1e2a3a !important; }
-li[role="option"] { background-color: #111827 !important; color: #c8d0e0 !important; }
-li[role="option"]:hover { background-color: #1e2a3a !important; }
+div[data-baseweb="select"] span { color: #1a2035 !important; }
+div[data-baseweb="popover"] { background-color: #ffffff !important; border: 1px solid #dde3ed !important; box-shadow: 0 8px 30px rgba(0,0,0,0.1) !important; }
+li[role="option"] { background-color: #ffffff !important; color: #1a2035 !important; }
+li[role="option"]:hover { background-color: #f0f4ff !important; }
 
 /* ── Labels ── */
 label, .stSelectbox label, .stNumberInput label, p {
-    color: #8892a4 !important;
+    color: #4a5568 !important;
     font-family: 'Outfit', sans-serif !important;
     font-size: 0.82rem !important;
 }
@@ -73,39 +78,39 @@ label, .stSelectbox label, .stNumberInput label, p {
 /* ── Number input buttons ── */
 button[data-testid="stNumberInput-StepDown"],
 button[data-testid="stNumberInput-StepUp"] {
-    background-color: #1a2035 !important;
-    border: 1px solid #1e2a3a !important;
-    color: #8892a4 !important;
+    background-color: #f0f4ff !important;
+    border: 1px solid #dde3ed !important;
+    color: #4a5568 !important;
     border-radius: 6px !important;
 }
 button[data-testid="stNumberInput-StepDown"]:hover,
 button[data-testid="stNumberInput-StepUp"]:hover {
-    background-color: #00d4aa !important;
-    color: #080c14 !important;
+    background-color: #0070f3 !important;
+    color: #ffffff !important;
 }
 
 /* ── Expander ── */
-details { background-color: #0d1117 !important; border: 1px solid #1a2035 !important; border-radius: 10px !important; }
-summary { color: #5a6478 !important; font-family: 'JetBrains Mono', monospace !important; font-size: 0.75rem !important; padding: 10px 16px !important; }
-.streamlit-expanderHeader { background-color: #0d1117 !important; color: #5a6478 !important; border-radius: 10px !important; }
-.streamlit-expanderContent { background-color: #0d1117 !important; border-top: 1px solid #1a2035 !important; }
+details { background-color: #ffffff !important; border: 1px solid #dde3ed !important; border-radius: 10px !important; }
+summary { color: #7a8499 !important; font-family: 'JetBrains Mono', monospace !important; font-size: 0.75rem !important; padding: 10px 16px !important; }
+.streamlit-expanderHeader { background-color: #ffffff !important; color: #7a8499 !important; border-radius: 10px !important; }
+.streamlit-expanderContent { background-color: #ffffff !important; border-top: 1px solid #dde3ed !important; }
 
 /* ── Dataframe ── */
-[data-testid="stDataFrame"] { background-color: #0d1117 !important; border: 1px solid #1a2035 !important; border-radius: 8px !important; }
+[data-testid="stDataFrame"] { background-color: #ffffff !important; border: 1px solid #dde3ed !important; border-radius: 8px !important; }
 
 /* ── Progress bars ── */
-.stProgress > div > div { background: linear-gradient(90deg,#00d4aa,#0099ff) !important; border-radius: 4px !important; }
-.stProgress > div { background: #1a2035 !important; border-radius: 4px !important; height: 6px !important; }
+.stProgress > div > div { background: linear-gradient(90deg,#0070f3,#00c9a7) !important; border-radius: 4px !important; }
+.stProgress > div { background: #e8edf5 !important; border-radius: 4px !important; height: 6px !important; }
 
 /* ── Spinner ── */
-.stSpinner > div { border-top-color: #00d4aa !important; }
+.stSpinner > div { border-top-color: #0070f3 !important; }
 
 /* ── Hero ── */
 .hero-wrap { text-align: center; padding: 2.5rem 0 1.5rem 0; }
 .hero-badge {
     display: inline-block;
-    background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3);
-    color: #00d4aa; font-family: 'JetBrains Mono', monospace;
+    background: rgba(0,112,243,0.08); border: 1px solid rgba(0,112,243,0.25);
+    color: #0070f3; font-family: 'JetBrains Mono', monospace;
     font-size: 0.65rem; letter-spacing: 2px; padding: 5px 16px;
     border-radius: 20px; margin-bottom: 18px;
 }
@@ -113,38 +118,37 @@ summary { color: #5a6478 !important; font-family: 'JetBrains Mono', monospace !i
     font-size: clamp(2.2rem, 6vw, 3.2rem);
     font-weight: 900; line-height: 1.05;
     margin-bottom: 10px; letter-spacing: -2px;
-    /* FIX: explicit color so "Fraud" is visible, span overrides for gradient */
-    color: #ffffff;
+    color: #0f172a;
 }
 .hero-title .gradient {
-    background: linear-gradient(135deg, #00d4aa, #0099ff);
+    background: linear-gradient(135deg, #0070f3, #00c9a7);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     color: transparent;
 }
-.hero-sub { color: #4a5568; font-size: clamp(0.82rem, 2.5vw, 0.95rem); line-height: 1.6; }
+.hero-sub { color: #7a8499; font-size: clamp(0.82rem, 2.5vw, 0.95rem); line-height: 1.6; }
 
 /* ── Section headers ── */
 .sec-header { display: flex; align-items: center; gap: 10px; margin: 2rem 0 0.8rem 0; }
-.sec-dot { width: 6px; height: 6px; background: #00d4aa; border-radius: 50%; flex-shrink: 0; }
-.sec-title { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #00d4aa; white-space: nowrap; }
-.sec-line { flex: 1; height: 1px; background: linear-gradient(to right, rgba(0,212,170,0.25), transparent); }
+.sec-dot { width: 6px; height: 6px; background: #0070f3; border-radius: 50%; flex-shrink: 0; }
+.sec-title { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #0070f3; white-space: nowrap; }
+.sec-line { flex: 1; height: 1px; background: linear-gradient(to right, rgba(0,112,243,0.25), transparent); }
 
 /* ── Info pill ── */
-.info-pill { background: rgba(0,153,255,0.06); border: 1px solid rgba(0,153,255,0.18); border-radius: 10px; padding: 10px 16px; font-size: 0.8rem; color: #4a9eff; margin-bottom: 16px; line-height: 1.6; }
+.info-pill { background: rgba(0,112,243,0.05); border: 1px solid rgba(0,112,243,0.18); border-radius: 10px; padding: 10px 16px; font-size: 0.8rem; color: #0070f3; margin-bottom: 16px; line-height: 1.6; }
 
 /* ── Divider ── */
-.divider { border: none; border-top: 1px solid #141d2e; margin: 1.5rem 0; }
+.divider { border: none; border-top: 1px solid #e2e8f0; margin: 1.5rem 0; }
 
 /* ── Button ── */
 .stButton > button {
-    background: linear-gradient(135deg, #00d4aa, #0099ff) !important;
-    color: #080c14 !important; border: none !important; border-radius: 12px !important;
+    background: linear-gradient(135deg, #0070f3, #00c9a7) !important;
+    color: #ffffff !important; border: none !important; border-radius: 12px !important;
     font-family: 'Outfit', sans-serif !important; font-weight: 700 !important;
     font-size: 1rem !important; padding: 14px 0 !important; width: 100% !important;
     letter-spacing: 0.5px !important; transition: opacity 0.2s, transform 0.1s !important;
-    margin-top: 8px !important; box-shadow: 0 4px 20px rgba(0,212,170,0.25) !important;
+    margin-top: 8px !important; box-shadow: 0 4px 20px rgba(0,112,243,0.25) !important;
 }
 .stButton > button:hover { opacity: 0.9 !important; transform: translateY(-1px) !important; }
 .stButton > button:active { transform: translateY(0) !important; }
@@ -152,63 +156,63 @@ summary { color: #5a6478 !important; font-family: 'JetBrains Mono', monospace !i
 /* ── Result cards ── */
 .result-card { border-radius: 16px; padding: 24px; margin: 16px 0; position: relative; overflow: hidden; }
 .result-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-.result-fraud  { background: linear-gradient(145deg,#1c0a0a,#100505); border: 1px solid rgba(255,59,59,0.3); }
-.result-fraud::before  { background: linear-gradient(90deg,#ff3b3b,#ff8c00); }
-.result-suspicious { background: linear-gradient(145deg,#1c1000,#100900); border: 1px solid rgba(255,160,0,0.3); }
-.result-suspicious::before { background: linear-gradient(90deg,#ffa000,#ffdd00); }
-.result-safe   { background: linear-gradient(145deg,#021c10,#010e08); border: 1px solid rgba(0,212,170,0.3); }
-.result-safe::before   { background: linear-gradient(90deg,#00d4aa,#0099ff); }
+.result-fraud  { background: linear-gradient(145deg,#fff5f5,#fff0f0); border: 1px solid rgba(229,62,62,0.25); }
+.result-fraud::before  { background: linear-gradient(90deg,#e53e3e,#f97316); }
+.result-suspicious { background: linear-gradient(145deg,#fffbf0,#fff8e6); border: 1px solid rgba(214,158,46,0.3); }
+.result-suspicious::before { background: linear-gradient(90deg,#d69e2e,#f6e05e); }
+.result-safe   { background: linear-gradient(145deg,#f0fdf9,#edfcf6); border: 1px solid rgba(0,159,127,0.25); }
+.result-safe::before   { background: linear-gradient(90deg,#00c9a7,#0070f3); }
 .result-icon { font-size: 2.2rem; margin-bottom: 8px; display: block; }
 .result-label { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 5px; display: block; }
-.result-fraud .result-label    { color: #ff6b6b; }
-.result-suspicious .result-label { color: #ffa000; }
-.result-safe .result-label     { color: #00d4aa; }
-.result-title { font-size: clamp(1.4rem,4vw,1.9rem); font-weight: 900; color: #ffffff; letter-spacing: -0.5px; margin-bottom: 8px; display: block; }
-.result-desc { color: #5a6478; font-size: 0.85rem; line-height: 1.7; margin-bottom: 14px; display: block; }
+.result-fraud .result-label    { color: #e53e3e; }
+.result-suspicious .result-label { color: #c07a00; }
+.result-safe .result-label     { color: #00967a; }
+.result-title { font-size: clamp(1.4rem,4vw,1.9rem); font-weight: 900; color: #0f172a; letter-spacing: -0.5px; margin-bottom: 8px; display: block; }
+.result-desc { color: #64748b; font-size: 0.85rem; line-height: 1.7; margin-bottom: 14px; display: block; }
 .result-score { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; padding: 5px 14px; border-radius: 20px; }
-.result-fraud .result-score      { background: rgba(255,59,59,0.1); color: #ff6b6b; border: 1px solid rgba(255,59,59,0.25); }
-.result-suspicious .result-score { background: rgba(255,160,0,0.1); color: #ffa000; border: 1px solid rgba(255,160,0,0.25); }
-.result-safe .result-score       { background: rgba(0,212,170,0.1); color: #00d4aa; border: 1px solid rgba(0,212,170,0.25); }
+.result-fraud .result-score      { background: rgba(229,62,62,0.08); color: #e53e3e; border: 1px solid rgba(229,62,62,0.2); }
+.result-suspicious .result-score { background: rgba(214,158,46,0.1); color: #c07a00; border: 1px solid rgba(214,158,46,0.25); }
+.result-safe .result-score       { background: rgba(0,201,167,0.1); color: #00967a; border: 1px solid rgba(0,201,167,0.25); }
 
 /* ── Score pills ── */
 .scores-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 14px 0; }
 @media(max-width:520px){ .scores-row { grid-template-columns: 1fr; } }
-.score-pill { background: #0d1117; border: 1px solid #1a2035; border-radius: 12px; padding: 14px 16px; text-align: center; }
-.score-pill-label { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 1.5px; text-transform: uppercase; color: #5a6478; margin-bottom: 6px; }
-.score-pill-value { font-size: 1.5rem; font-weight: 700; color: #ffffff; }
-.score-pill-sub { font-size: 0.68rem; color: #3a4455; margin-top: 3px; }
+.score-pill { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.score-pill-label { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 1.5px; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px; }
+.score-pill-value { font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+.score-pill-sub { font-size: 0.68rem; color: #cbd5e1; margin-top: 3px; }
 
 /* ── Feature grid ── */
 .feat-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin: 12px 0; }
 @media(max-width:520px){ .feat-grid { grid-template-columns: 1fr; } }
-.feat-cell { background: #0d1117; border: 1px solid #1a2035; border-radius: 10px; padding: 13px 15px; }
-.feat-cell-label { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; color: #3a4455; margin-bottom: 5px; }
-.feat-cell-value { font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 3px; }
-.feat-cell-desc { font-size: 0.71rem; color: #3a4455; line-height: 1.45; }
-.feat-cell.high .feat-cell-value { color: #ff6b6b; }
-.feat-cell.med  .feat-cell-value { color: #ffa000; }
-.feat-cell.low  .feat-cell-value { color: #00d4aa; }
+.feat-cell { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 13px 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.feat-cell-label { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; color: #94a3b8; margin-bottom: 5px; }
+.feat-cell-value { font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 3px; }
+.feat-cell-desc { font-size: 0.71rem; color: #94a3b8; line-height: 1.45; }
+.feat-cell.high .feat-cell-value { color: #e53e3e; }
+.feat-cell.med  .feat-cell-value { color: #c07a00; }
+.feat-cell.low  .feat-cell-value { color: #00967a; }
 
 /* ── Flags ── */
 .flag-item { display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; border-radius: 10px; margin-bottom: 8px; font-size: 0.83rem; line-height: 1.55; }
-.flag-red    { background: rgba(255,59,59,0.07);  border: 1px solid rgba(255,59,59,0.18);  color: #ff9090; }
-.flag-yellow { background: rgba(255,160,0,0.07);  border: 1px solid rgba(255,160,0,0.18);  color: #ffc04a; }
-.flag-green  { background: rgba(0,212,170,0.07);  border: 1px solid rgba(0,212,170,0.18);  color: #00d4aa; }
+.flag-red    { background: rgba(229,62,62,0.05);  border: 1px solid rgba(229,62,62,0.18);  color: #c53030; }
+.flag-yellow { background: rgba(214,158,46,0.07); border: 1px solid rgba(214,158,46,0.2);  color: #b7791f; }
+.flag-green  { background: rgba(0,201,167,0.06);  border: 1px solid rgba(0,201,167,0.2);  color: #00967a; }
 
 /* ── Recommendation ── */
 .rec-box { border-radius: 12px; padding: 18px 20px; margin-top: 14px; }
-.rec-fraud      { background: rgba(255,59,59,0.05);  border: 1px solid rgba(255,59,59,0.2); }
-.rec-suspicious { background: rgba(255,160,0,0.05);  border: 1px solid rgba(255,160,0,0.2); }
-.rec-safe       { background: rgba(0,212,170,0.05);  border: 1px solid rgba(0,212,170,0.2); }
+.rec-fraud      { background: rgba(229,62,62,0.04);  border: 1px solid rgba(229,62,62,0.2); }
+.rec-suspicious { background: rgba(214,158,46,0.05); border: 1px solid rgba(214,158,46,0.2); }
+.rec-safe       { background: rgba(0,201,167,0.05);  border: 1px solid rgba(0,201,167,0.2); }
 .rec-title { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; display: block; }
-.rec-fraud .rec-title      { color: #ff6b6b; }
-.rec-suspicious .rec-title { color: #ffa000; }
-.rec-safe .rec-title       { color: #00d4aa; }
-.rec-step { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 0.82rem; color: #8892a4; line-height: 1.55; }
-.rec-num { background: #1a2035; color: #00d4aa; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 600; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.rec-fraud .rec-title      { color: #e53e3e; }
+.rec-suspicious .rec-title { color: #c07a00; }
+.rec-safe .rec-title       { color: #00967a; }
+.rec-step { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 0.82rem; color: #4a5568; line-height: 1.55; }
+.rec-num { background: #e8f0fe; color: #0070f3; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 600; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
 
 /* ── Footer ── */
-.footer { text-align: center; padding: 2rem 0 1rem 0; font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 2px; color: #1e2535; }
+.footer { text-align: center; padding: 2rem 0 1rem 0; font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 2px; color: #c1cad8; }
 
 /* ── Mobile ── */
 @media(max-width:640px){
@@ -247,7 +251,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-if gb_model is None:
+# ── BUG FIX: Check all model components loaded, not just gb_model ──
+if any(v is None for v in [gb_model, iso_model, iso_scaler, feature_list, weights]):
     st.error(
         "⚠️ Model files not found. Ensure all 5 files exist in `models/`:\n\n"
         "- `gradient_boosting_fraud_model.pkl`\n"
@@ -299,9 +304,8 @@ with col6:
 # ─── COMPUTE FEATURES ──────────────────────────────────────────────────────────
 
 def compute_features():
-    type_encoded  = 0 if tx_type == "CASH_OUT" else 1
-    amount_ratio  = min(amount / (oldbalanceOrg + 1), 10)
-    # ✅ Float-safe: use < 0.01 instead of == 0
+    type_encoded             = 0 if tx_type == "CASH_OUT" else 1
+    amount_ratio             = min(amount / (oldbalanceOrg + 1), 10)
     dest_was_empty           = 1 if oldbalanceDest < 0.01 else 0
     hour_of_day              = int(step) % 24
     drain_score              = amount / (oldbalanceOrg + amount + 1)
@@ -319,17 +323,18 @@ def compute_features():
         "both_accounts_suspicious": [both_accounts_suspicious],
     })
 
+# ── BUG FIX: use_container_width=True replaces invalid width='stretch' ──
 with st.expander("🔬 View computed feature vector"):
     df_preview = compute_features()
     ca, cb = st.columns(2)
     with ca:
         st.caption("Derived Features")
-        st.dataframe(df_preview[["amount_ratio","dest_was_empty","hour_of_day"]], width='stretch')
+        st.dataframe(df_preview[["amount_ratio", "dest_was_empty", "hour_of_day"]], use_container_width=True)
     with cb:
         st.caption("Unique Features")
-        st.dataframe(df_preview[["drain_score","both_accounts_suspicious"]], width='stretch')
+        st.dataframe(df_preview[["drain_score", "both_accounts_suspicious"]], use_container_width=True)
     st.caption("Full Feature Vector (sent to model)")
-    st.dataframe(df_preview[feature_list], width='stretch')
+    st.dataframe(df_preview[feature_list], use_container_width=True)
 
 
 # ─── ANALYSE BUTTON ─────────────────────────────────────────────────────────────
@@ -337,18 +342,27 @@ with st.expander("🔬 View computed feature vector"):
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
 if st.button("🛡️  Analyse Transaction"):
+    # ── BUG FIX: compute once and reuse throughout ──
     input_df = compute_features()[feature_list]
 
     with st.spinner("Analysing transaction..."):
-        gb_proba  = float(gb_model.predict_proba(input_df)[0][1])
-        iso_raw   = iso_model.decision_function(input_df)
-        iso_score = float(np.clip(iso_scaler.transform(-iso_raw.reshape(-1,1)).flatten()[0], 0, 1))
-        combined  = float(np.clip((GB_WEIGHT * gb_proba) + (IF_WEIGHT * iso_score), 0, 1))
-        safe_prob = float(np.clip(1 - combined, 0, 1))
+        gb_proba = float(gb_model.predict_proba(input_df)[0][1])
+
+        # ── BUG FIX: safer Isolation Forest score normalization ──
+        # decision_function returns higher = more normal; lower = more anomalous
+        # We negate so higher value = more anomalous, then min-max scale to [0,1]
+        iso_raw   = float(iso_model.decision_function(input_df)[0])
+        iso_neg   = -iso_raw  # higher = more anomalous
+        # Use scaler fitted on negated scores (same direction as training)
+        iso_scaled = float(iso_scaler.transform(np.array([[iso_neg]]))[0][0])
+        iso_score  = float(np.clip(iso_scaled, 0.0, 1.0))
+
+        combined  = float(np.clip((GB_WEIGHT * gb_proba) + (IF_WEIGHT * iso_score), 0.0, 1.0))
+        safe_prob = float(np.clip(1.0 - combined, 0.0, 1.0))
 
     risk = "FRAUD" if combined >= 0.55 else "SUSPICIOUS" if combined >= 0.15 else "SAFE"
 
-    # Pull feature values
+    # Pull feature values from the already-computed input_df
     drain_val        = float(input_df['drain_score'].values[0])
     both_val         = int(input_df['both_accounts_suspicious'].values[0])
     dest_empty_val   = int(input_df['dest_was_empty'].values[0])
